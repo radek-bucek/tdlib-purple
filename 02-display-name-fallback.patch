@@ -1,0 +1,26 @@
+diff --git a/client-utils.cpp b/client-utils.cpp
+index ad0611e..905910a 100644
+--- a/client-utils.cpp
++++ b/client-utils.cpp
+@@ -484,7 +484,20 @@ std::string makeBasicDisplayName(const td::td_api::user &user)
+         result += ' ';
+     result += user.last_name_;
+ 
+-    return result;
++    if (!result.empty())
++        return result;
++
++    if (user.usernames_) {
++        if (!user.usernames_->editable_username_.empty())
++            return "@" + user.usernames_->editable_username_;
++        if (!user.usernames_->active_usernames_.empty() &&
++            !user.usernames_->active_usernames_[0].empty())
++            return "@" + user.usernames_->active_usernames_[0];
++    }
++    if (!user.phone_number_.empty())
++        return "+" + user.phone_number_;
++
++    return "id" + std::to_string(user.id_);
+ }
+ 
+ std::string getIncomingGroupchatSenderPurpleName(const td::td_api::chat &chat, const td::td_api::message &message,
